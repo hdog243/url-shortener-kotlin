@@ -1,0 +1,40 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Kotlin
+*.class
+*.klib
+
+# Ktor & Application Configuration
+# Keep application.conf tracked, but ignore local/secret overrides
+application-local.conf
+application-local.yaml
+*.env
+
+# IDE - IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+
+# IDE - VS Code
+.vscode/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# Logs & Diagnostics
+*.log
+hs_err_pid*
+replay_pid*

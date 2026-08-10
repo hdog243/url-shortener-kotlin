@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.plugins.configureMonitoring
 import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
 import io.ktor.server.engine.*
@@ -11,6 +12,8 @@ fun main(args: Array<String>) {
 
 @Suppress("unused")
 fun Application.module(){
+    configureKoin()
     configureRouting()
     configureSerialization()
+    configureMonitoring()
 }

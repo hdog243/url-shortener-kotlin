@@ -28,6 +28,8 @@ dependencies {
     implementation(libs.koin.loggerSlf4j)
     implementation(libs.logback.classic)
 
+    implementation("software.amazon.awssdk:dynamodb-enhanced:2.25.0")
+
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
     testImplementation("io.ktor:ktor-client-content-negotiation")

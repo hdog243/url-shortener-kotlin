@@ -1,17 +1,21 @@
 package com.example.routes
 
+import com.example.repo.UrlRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.delete
+import org.koin.ktor.ext.inject
 
 //returns 204 on success, 404 otherwise
 fun Routing.deleteByAlias() {
     delete("/{alias}") {
+
         val alias = call.parameters["alias"]
+        val urlRepo : UrlRepository by inject()
 
-        //TODO("Repo commands, respond 204 if found, 404 if not found")
-
-        call.response.status(HttpStatusCode.NoContent)
+        if(urlRepo.deleteByAlias(alias)) {
+            call.response.status(HttpStatusCode.NoContent)
+        }
 
     }
 }

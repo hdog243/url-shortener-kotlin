@@ -63,7 +63,7 @@ class ServerTest {
             }
         }
 
-        assertEquals(HttpStatusCode.PermanentRedirect, client.get("/randomAlias").status)
+        assertEquals(HttpStatusCode.TemporaryRedirect, client.get("/randomAlias").status)
     }
 
     @Test

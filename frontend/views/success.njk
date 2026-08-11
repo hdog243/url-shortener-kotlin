@@ -1,0 +1,21 @@
+{% extends "layout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {{ govukPanel({
+        titleText: "URL Shortened Successfully",
+        html: "Your short alias is<br><strong>" + alias + "</strong>"
+      }) }}
+
+      <p class="govuk-body">
+        Full destination: <a href="{{ fullUrl }}" class="govuk-link">{{ fullUrl }}</a>
+      </p>
+
+      <a href="/" class="govuk-button govuk-button--secondary">Shorten another URL</a>
+
+    </div>
+  </div>
+{% endblock %}

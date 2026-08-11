@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.logback.classic)
 
     implementation("software.amazon.awssdk:dynamodb-enhanced:2.25.0")
+    implementation("io.ktor:ktor-server-cors:3.5.0")
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)

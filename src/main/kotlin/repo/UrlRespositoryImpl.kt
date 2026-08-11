@@ -62,7 +62,7 @@ class DynamoDbUrlRepository(
     }
 
     override suspend fun deleteByAlias(alias: String?): Boolean {
-        val item = table.deleteItem(Key.builder().partitionValue(alias).build())
+        val item = table.deleteItem(Key.builder().partitionValue(alias?.trim('/')).build())
         return if(item != null)
             false
         else

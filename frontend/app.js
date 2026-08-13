@@ -81,19 +81,6 @@ app.get('/:alias', async(req, res, next) =>{
     }
 })
 
-app.post('/:alias', async(req,res) =>{
-    const {alias} = req.params
-
-    try{
-        await axios.delete(`${KTOR_API_URL}/${alias}`);
-        res.redirect('/');
-    }
-    catch(error){
-        console.error(`Failed to delete ${alias}`, error.message);
-        res.redirect('/')
-    }
-})
-
 app.post('/shorten', async (req, res) => {
     const { fullUrl } = req.body;
 
@@ -118,6 +105,21 @@ app.post('/shorten', async (req, res) => {
         });
     }
 });
+
+app.post('/:alias', async(req,res) =>{
+    const {alias} = req.params
+
+    try{
+        await axios.delete(`${KTOR_API_URL}/${alias}`);
+        res.redirect('/');
+    }
+    catch(error){
+        console.error(`Failed to delete ${alias}`, error.message);
+        res.redirect('/')
+    }
+})
+
+
 
 app.listen(PORT, () => {
     console.log(`GDS Express Frontend running on http://localhost:${PORT}`);

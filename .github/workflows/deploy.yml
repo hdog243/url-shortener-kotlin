@@ -1,0 +1,48 @@
+name: Build and Deploy to AWS Fargate
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Enables manual "Run workflow" button in GitHub UI
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push Backend (Ktor API)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/url-shortener-backend:latest .
+          docker push $ECR_REGISTRY/url-shortener-backend:latest
+
+      - name: Build & Push Frontend (Express GDS)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/url-shortener-frontend:latest ./frontend
+          docker push $ECR_REGISTRY/url-shortener-frontend:latest
+
+      - name: Force Update ECS Fargate Tasks
+        run: |
+          aws ecs update-service --cluster url-shortener-cluster --service ktor-backend-service --force-new-deployment --region eu-west-2
+          aws ecs update-service --cluster url-shortener-cluster --service express-frontend-service --force-new-deployment --region eu-west-2

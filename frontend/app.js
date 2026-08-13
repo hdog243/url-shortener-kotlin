@@ -51,7 +51,7 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.get('/:alias', async(req, res) =>{
+app.get('/:alias', async(req, res, next) =>{
     const {alias} = req.params
 
     if(alias === 'public' || alias === 'shorten') {

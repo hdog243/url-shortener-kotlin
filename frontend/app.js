@@ -2,6 +2,7 @@ const express = require('express');
 const nunjucks = require('nunjucks');
 const path = require('path');
 const axios = require('axios');
+const {formatErrorMessage} = require("govuk-frontend/common/index.mjs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,18 @@ nunjucks.configure(appViews, {
     express: app,
     noCache: true
 });
+
+// url validation function
+function isValidUrl(string){
+    try{
+        const url = new URL(string.trim());
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    }
+    catch (_)
+    {
+        return false;
+    }
+}
 
 app.set('view engine', 'njk');
 
@@ -82,12 +95,20 @@ app.get('/:alias', async(req, res, next) =>{
 })
 
 app.post('/shorten', async (req, res) => {
-    const { fullUrl } = req.body;
+    let { fullUrl } = req.body;
+
+    const errors = [];
 
     if (!fullUrl || !fullUrl.trim()) {
         return res.render('index.njk', {
             errorMessage: 'Enter a full web address',
             fullUrl
+        });
+    }
+    else if (!isValidUrl(fullUrl)){
+        return res.render('index.njk',{
+            errorMessage: 'Enter a URL with a valid prefix, http:// or https://',
+                fullUrl
         });
     }
 

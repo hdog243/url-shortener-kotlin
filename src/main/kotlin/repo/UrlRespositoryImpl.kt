@@ -2,6 +2,7 @@ package com.example.repo
 
 import com.example.models.UrlMappingItem
 import com.example.service.UrlAliasGen
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable
 import software.amazon.awssdk.enhanced.dynamodb.Expression
@@ -63,10 +64,7 @@ class DynamoDbUrlRepository(
 
     override suspend fun deleteByAlias(alias: String?): Boolean {
         val item = table.deleteItem(Key.builder().partitionValue(alias?.trim('/')).build())
-        return if(item != null)
-            false
-        else
-            false
+        return item != null
     }
 
     override suspend fun getAll(): List<UrlMappingItem> {

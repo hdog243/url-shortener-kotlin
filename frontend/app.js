@@ -96,6 +96,7 @@ app.get('/:alias', async(req, res, next) =>{
 
 app.post('/shorten', async (req, res) => {
     let { fullUrl } = req.body;
+    const {customAlias} = req.body;
 
     const errors = [];
 
@@ -114,7 +115,10 @@ app.post('/shorten', async (req, res) => {
 
     try {
         // Post to Ktor Backend API
-        const response = await axios.post(`${KTOR_API_URL}/shorten`, { fullUrl });
+        const response = await axios.post(`${KTOR_API_URL}/shorten`, {
+            fullUrl,
+            customAlias: customAlias?.trim() || undefined
+        });
         const shortAlias = response.data.alias;
 
         res.render('success.njk', { alias: shortAlias, fullUrl });

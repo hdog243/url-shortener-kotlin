@@ -9,7 +9,7 @@ class UrlAliasGen {
         private val random = SecureRandom() // Thread-safe, non-blocking random generator
 
 
-        suspend fun createAlias(length: Int?): String {
+        fun createAlias(length: Int?): String {
             var aliasLength = length
 
             //if length is not specified then we'll default to 7

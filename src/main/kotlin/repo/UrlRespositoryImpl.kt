@@ -2,7 +2,6 @@ package com.example.repo
 
 import com.example.models.UrlMappingItem
 import com.example.service.UrlAliasGen
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable
 import software.amazon.awssdk.enhanced.dynamodb.Expression
@@ -11,7 +10,8 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException
-import java.util.UUID
+import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException
+
 
 class DuplicateAliasException(message: String) : Exception(message)
 
@@ -24,6 +24,24 @@ class DynamoDbUrlRepository(
         tableName,
         TableSchema.fromBean(UrlMappingItem::class.java)
     )
+
+    init {
+        initTable()
+    }
+
+    private fun initTable() {
+        try{
+            table.createTable()
+            println("Created Table: $tableName")
+        }catch(e: ResourceInUseException)
+        {
+            //safe to carry on if table is already there
+            println("table already exists: $tableName")
+        }
+        catch (e: DynamoDbException) {
+            System.err.println("Failed to create table ${e.message}")
+        }
+    }
 
     override suspend fun createShortUrl(fullUrl: String?, customAlias: String?): UrlMappingItem {
 

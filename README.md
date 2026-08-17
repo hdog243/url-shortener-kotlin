@@ -60,3 +60,15 @@ For a system that generates 100,000 hits per day, of which 80,000 are reads and 
 | **Total**            |                                              | **~$22.97 / month** |
 
 This costs would likely vary slightly as I would not expect the Fargate service to be able to handle that much load with such low spec and instances but it serves as a projection
+
+---
+## Notable Omissions & Improvements
+
+* Database actions are not truly asynchronous, this would cause an issue and high volume, moving to ```DynamoDbEnhancedAsyncClient``` would resolve this
+* Consistency is entirely handled by DynamoDB at this point, this is fine but needs careful management if multi-region deployments and accelerators are implemented
+* No pagination of results when performing table scan, all results in the table are returned from Dynamo, this is expensive on large scans in terms of performance and cost. Pagination should be implemented in order to provide a better front end experience to the user. This however, does not limit the financial cost of running a scan. In reality though, it is unlikely a production system would return all URLs
+* Items should be deleted based on a TTL value set in the DB. This would be a design decision, links may wish to persist forever but that has cost and storage considerations, if links are deleted though we should determine if those aliases should be reused again
+* Backend and Frontend tests are minimal and should be extended further
+* The live system is slow due to the Fargate sizing, even for a single deployment this would need to be performance benchmarked
+* The repo is injected into each route, this could be lifted further up
+* Ktor has been used for the API, Spring Boot may have been preferable but this served as a good intro into Kotlin

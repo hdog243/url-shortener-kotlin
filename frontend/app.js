@@ -87,7 +87,7 @@ app.get('/:alias', async(req, res, next) =>{
             }
         }
     }catch(error){
-        console.error(`Error resolbing alias ${alias}`, error.message);
+        console.error(`Error resolving alias ${alias}`, error.message);
         res.status(404).render('index.njk',{
             errorMessage: 'ShortUrl not found or expired'
         })
@@ -97,8 +97,6 @@ app.get('/:alias', async(req, res, next) =>{
 app.post('/shorten', async (req, res) => {
     let { fullUrl } = req.body;
     const {customAlias} = req.body;
-
-    const errors = [];
 
     if (!fullUrl || !fullUrl.trim()) {
         return res.render('index.njk', {

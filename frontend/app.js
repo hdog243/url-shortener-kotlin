@@ -2,7 +2,7 @@ const express = require('express');
 const nunjucks = require('nunjucks');
 const path = require('path');
 const axios = require('axios');
-const {formatErrorMessage} = require("govuk-frontend/common/index.mjs");
+//const {formatErrorMessage} = require("govuk-frontend/common/index.mjs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -141,7 +141,10 @@ app.post('/:alias', async(req,res) =>{
 })
 
 
+if(process.env.NODE_ENV !== 'test'){
+    app.listen(PORT, () =>{
+        console.log(`GDS Express Frontend running on http://localhost:${PORT}`);
+    })
+}
 
-app.listen(PORT, () => {
-    console.log(`GDS Express Frontend running on http://localhost:${PORT}`);
-});
+module.exports = app;

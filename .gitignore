@@ -1,50 +1,101 @@
-# Gradle
+# ==========================================
+# ☕ Kotlin & Gradle Build Artifacts
+# ==========================================
 .gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-# Kotlin
-*.class
-*.klib
-
-# Ktor & Application Configuration
-# Keep application.conf tracked, but ignore local/secret overrides
-application-local.conf
-application-local.yaml
-*.env
-
-# IDE - IntelliJ IDEA
-.idea/
-*.iws
-*.iml
-*.ipr
+bin/
 out/
 
-# IDE - Eclipse
+# Allow Gradle Wrapper binaries
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Compiled class files & Kotlin metadata
+*.class
+*.klib
+*.hprof
+
+# ==========================================
+# 🌐 Frontend (Node.js / Express / GOV.UK)
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json.bak
+
+# Frontend build outputs / compiled CSS
+frontend/public/stylesheets/*.css.map
+frontend/dist/
+
+# ==========================================
+# ⚙️ Application & Environment Secrets
+# ==========================================
+*.env
+*.env.*
+!.env.example
+application-local.conf
+application-local.yaml
+
+# ==========================================
+# ☁️ HashiCorp Terraform
+# ==========================================
+# Local .terraform working directories
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# ==========================================
+# 💻 IDEs & Editor Metadata
+# ==========================================
+# IntelliJ IDEA / WebStorm / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Eclipse
 .classpath
 .project
 .settings/
 
-# IDE - VS Code
-.vscode/
+# ==========================================
+# 🧪 Testing & Coverage Reports
+# ==========================================
+coverage/
+.nyc_output/
+reports/
+test-results/
 
-# OS Specific
+# ==========================================
+# 🖥️ OS & Diagnostic Logs
+# ==========================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Logs & Diagnostics
 *.log
 hs_err_pid*
 replay_pid*
-
-# --- Terraform ---
-terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.backup
-terraform/*.tfvars
-terraform/.terraform.lock.hcl
-
-#front end
-node_modules/

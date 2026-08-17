@@ -2,6 +2,7 @@ package com.example.routes
 
 import com.example.models.ShortenRequest
 import com.example.repo.UrlRepository
+import com.example.service.UrlValidator
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
@@ -17,6 +18,12 @@ fun Route.shorten() {
         try {
             val request = call.receive<ShortenRequest>()
 
+            //validate the url first before we bother with anything else
+            if(!UrlValidator.validate(request.fullUrl)){
+                call.respond(HttpStatusCode.BadRequest, message = "Invalid url")
+                return@post
+            }
+
             val urlRepo : UrlRepository by inject()
 
             //do db insert which tells us if there is a collision
@@ -29,8 +36,6 @@ fun Route.shorten() {
             else{
                 call.respond(HttpStatusCode.InternalServerError, message = "Invalid alias or already taken")
             }
-
-            call.response.status(HttpStatusCode.Created)
         }
         catch(e: Exception) {
             call.respond(HttpStatusCode.BadRequest)

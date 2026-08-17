@@ -30,7 +30,7 @@ val appModule = module {
         }
 
         val regionStr = getEnvOrConfig("aws.dynamodb.region", "AWS_REGION", "AWS_DEFAULT_REGION") ?: "eu-west-2"
-        val endpointUrl = getEnvOrConfig("aws.dynamodb.endpoint", "DYNAMODB_ENDPOINT")
+        val endpointUrl = getEnvOrConfig("aws.dynamodb.endpoint", "DYNAMODB_ENDPOINT") ?: "http://localhost:8000"
 
         println(">>> DYNAMO REGION: '$regionStr'")
         println(">>> DYNAMO ENDPOINT: '${endpointUrl ?: "AWS Native"}'")

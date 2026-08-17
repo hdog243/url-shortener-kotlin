@@ -2,6 +2,7 @@ package com.example
 
 import com.example.models.ShortenRequest
 import com.example.models.ShortenResponse
+import com.example.repo.UrlRepository
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.delete
@@ -15,19 +16,44 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.install
 import io.ktor.server.testing.testApplication
 import io.netty.handler.codec.DefaultHeaders
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class ServerTest {
 
+    private val fakeRepo = FakeUrlRepository()
+    private val testModule = module {
+        single<UrlRepository> { fakeRepo }
+    }
+
+    @BeforeTest
+    fun setUp() {
+        stopKoin()
+        fakeRepo.clear()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
+    }
+
     @Test
     fun `get all urls returns success`() = testApplication {
-        application{
+        application {
             module()
+            loadKoinModules(testModule)
         }
 
-        val client = createClient{
+        fakeRepo.seed("test1", "https://example.com/1")
+        fakeRepo.seed("test2", "https://example.com/2")
+
+        val client = createClient {
             install(ContentNegotiation) {
                 json()
             }
@@ -37,54 +63,87 @@ class ServerTest {
     }
 
     @Test
-    fun `delete alias returns no content` () = testApplication {
-        application{
+    fun `delete alias returns no content`() = testApplication {
+        application {
             module()
+            loadKoinModules(testModule)
         }
 
-        val client = createClient{
+        val client = createClient {
             install(ContentNegotiation) {
                 json()
             }
         }
 
-        assertEquals(HttpStatusCode.NoContent, client.delete("/alias").status)
+        //seed the item to delete
+        fakeRepo.seed("test1", "https://example.com/1")
+
+        assertEquals(HttpStatusCode.NoContent, client.delete("/test1").status)
     }
 
     @Test
-    fun `get alias returns redirect` () = testApplication {
-        application{
+    fun `get alias returns redirect`() = testApplication {
+        application {
             module()
+            loadKoinModules(testModule)
         }
 
-        val client = createClient{
+        val client = createClient {
+            followRedirects = false
             install(ContentNegotiation) {
                 json()
             }
         }
 
-        assertEquals(HttpStatusCode.TemporaryRedirect, client.get("/randomAlias").status)
+        fakeRepo.seed("test1", "https://example.com/1")
+
+        assertEquals(HttpStatusCode.Found, client.get("/test1").status)
     }
 
     @Test
     fun `post to shorten with no body get bad content`() = testApplication {
-        application{
+        application {
             module()
+            loadKoinModules(testModule)
         }
 
-        val client = createClient{
+        val client = createClient {
             install(ContentNegotiation) {
                 json()
             }
         }
-        assertEquals(HttpStatusCode.BadRequest, client.post ( "/shorten" ).status )
+        assertEquals(HttpStatusCode.BadRequest, client.post("/shorten").status)
     }
 
     @Test
-    fun `post to shorten and respond created`() = testApplication {
+    fun `post to shorten with malformed url returns bad request`() = testApplication {
+        application {
+            module()
+            loadKoinModules(testModule)
+        }
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val requestBody = ShortenRequest(fullUrl = "aaa")
+
+        val response = client.post("/shorten") {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody)
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun `post to shorten with malformed request and respond bad request`() = testApplication {
         // 1. Configure the test server
         application {
             module()
+            loadKoinModules(testModule)
         }
 
 
@@ -96,6 +155,30 @@ class ServerTest {
 
         val requestBody = ShortenRequest(fullUrl = "www.google.com", customAlias = "test")
 
+        val response = client.post("/shorten") {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody)
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun `post to shorten and respond created`() = testApplication {
+        // 1. Configure the test server
+        application {
+            module()
+            loadKoinModules(testModule)
+        }
+
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val requestBody = ShortenRequest(fullUrl = "https://www.google.com", customAlias = "test")
 
         val response = client.post("/shorten") {
             contentType(ContentType.Application.Json)
@@ -104,28 +187,4 @@ class ServerTest {
 
         assertEquals(HttpStatusCode.Created, response.status)
     }
-
-//    @Test
-//    fun `post to shorten and returns ShortenResponse object`() = testApplication {
-//        application{
-//            module()
-//        }
-//
-//        val client = createClient {
-//            install(ContentNegotiation) {
-//                json()
-//            }
-//        }
-//
-//        val requestBody = ShortenRequest(fullUrl = "www.google.com", customAlias = "test")
-//
-//
-//        val response = client.post("/shorten") {
-//            contentType(ContentType.Application.Json)
-//            setBody(requestBody)
-//        }
-//
-//        val obj = response.body()  as ShortenResponse
-//        assertNotEquals("", obj.toString())
-//    }
 }

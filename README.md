@@ -22,7 +22,7 @@ The infrastructure is provisioned via **Terraform** on **AWS ECS Fargate**, feat
 
 The local development environment makes use of the DynamoDB Local container to prevent the need to access Dynamo on AWS
 
-The below docker compose inlcudes Dynamo DB Local as well as a web administration interface for interacting with Dyanmo Local outside of the CLI
+The below docker compose includes Dynamo DB Local as well as a web administration interface for interacting with DynamoDB Local outside of the CLI
 
 ```bash
 docker compose up --build
@@ -41,13 +41,13 @@ docker compose up --build
 
 **WAF and ALB** are excluded from this implementation due to cost of running, for a live system these would of course exist to offer security and balancing between the dynamic Fargate instances that come up
 
-This represents a single region system at this stage, mutli-region would easily be possible through Dynamo Global Tables
+This represents a single region system at this stage, multi-region would easily be possible through Dynamo Global Tables
 
 The same is true for Fargate where containers could be deployed into desired regions, most likely based on usage for those regions
 
 # Projected Cloud Costs
 
-For a system that generates 100,000 hits per day, of which 80,000 are reads and 20,000 are new url generations the system would cost the following over a 30 day period
+For a system that generates 100,000 hits per day, of which 80,000 are reads and 20,000 are new url generations the system would cost the following over a 30-day period
 
 | AWS Service          | Size / Quantity                              | Cost (USD)          |
 |----------------------|----------------------------------------------|---------------------|
@@ -59,7 +59,7 @@ For a system that generates 100,000 hits per day, of which 80,000 are reads and 
 | ECR                  | 2 docker repos                               | 0.05                |
 | **Total**            |                                              | **~$22.97 / month** |
 
-This costs would likely vary slightly as I would not expect the Fargate service to be able to handle that much load with such low spec and instances but it serves as a projection
+This costs would likely vary slightly as I would not expect the Fargate service to be able to handle that much load with such low spec and instances, but it serves as a projection
 
 ---
 ## Notable Omissions & Improvements
